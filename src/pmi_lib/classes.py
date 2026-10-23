@@ -99,6 +99,10 @@ class Image:
         else:
             return self.spacing[0] * self.spacing[1] * self.spacing[2]
 
+    def __setitem__(self, key: Any, value: Any) -> None:
+        # Allows the input to use as a dictonary or a list
+        self._data[key] = value
+
 
 class DicomImage(Image):
     def __init__(
