@@ -100,3 +100,7 @@ class Image:
     def __getitem__(self, key: Any) -> np.ndarray:
         # Allow the image to be indexed or sliced like a NumPy array.
         return self._data[key]
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        # Allows the input to use as a dictonary or a list
+        self._data[key] = value
