@@ -1,28 +1,39 @@
+
 from .classes import Image
 
-def add_sphere_py(image: Image, radius: float, value: float = 1.0) -> None:
-"""
 
-"""
-    # Making the image 3D for the 2D images
-    data = image._data
-    if data.ndim == 2:
-        data = data[None, :, :]
+def add_sphere_py(
+    image: Image, radius: float, value: float = 1.0
+) -> None:
+    """Add value to all pixels inside a centered sphere."""
+    if image._data.ndim not in (1, 2, 3):
+        raise ValueError("The image must be 1D, 2D, or 3D.")
 
-    # Determine the middle point of the image
+    if radius < 0:
+        raise ValueError("radius must be non-negative.")
+
+    # Create a 3D view while keeping changes connected to the original data.
+    if image._data.ndim == 1:
+        data = image._data[None, None, :]
+        spacing = (1.0, 1.0, image.spacing[0])
+    elif image._data.ndim == 2:
+        data = image._data[None, :, :]
+        spacing = (1.0, image.spacing[0], image.spacing[1])
+    else:
+        data = image._data
+        spacing = image.spacing
+
     center = [(size - 1) / 2 for size in data.shape]
 
-    # Loop through all the voxels of the 3D image
+    # Iterate over every voxel using for-loops.
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
             for k in range(data.shape[2]):
-                # Compute the distance to the middle point in mm
-                distance = (
-                    ((i - center[0]) * image.spacing[0]) ** 2
-                    + ((j - center[1]) * image.spacing[1]) ** 2
-                    + ((k - center[2]) * image.spacing[2]) ** 2
-                ) ** 0.5
+                distance_squared = (
+                    ((i - center[0]) * spacing[0]) ** 2
+                    + ((j - center[1]) * spacing[1]) ** 2
+                    + ((k - center[2]) * spacing[2]) ** 2
+                )
 
-                # Add the value when the voxel lays inside the sphere's radius
-                if distance <= radius:
+                if distance_squared <= radius**2:
                     data[i, j, k] += value
