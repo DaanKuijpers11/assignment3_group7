@@ -103,6 +103,10 @@ class Image:
         # Allows the input to use as a dictonary or a list
         self._data[key] = value
 
+    def __setitem__(self, key: Any, value: Any) -> None:
+        # Allows assigning a value to a pixel or a slice of the image using indexing.
+        self._data[key] = value
+
 
 class DicomImage(Image):
     def __init__(
